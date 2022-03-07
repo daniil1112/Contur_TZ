@@ -69,10 +69,15 @@ public class ImageController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
+        if (image.getHeight() != height || image.getWidth() != width){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
 
 
         BMPFile holst = fileRepository.getBMPFile(imageId+".bmp");
-        holst.setPuzzle(image, x, y);
+
+        holst.setPuzzle(image, x, y, height, width);
 
         fileRepository.saveImage(holst);
 

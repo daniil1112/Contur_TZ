@@ -1,6 +1,7 @@
 package com.example.contur_spring.repositories;
 
 import com.example.contur_spring.models.BMPFile;
+import org.apache.commons.lang.RandomStringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,25 +46,15 @@ public class FileRepository {
     }
 
     public String generateUniqId(){
-        String id = generateFileId();
+        String id = RandomStringUtils.randomAlphanumeric(16);
         File file = new File(path, id+".bmp");
         while (file.exists()){
-            id = generateFileId();
+            id = RandomStringUtils.randomAlphanumeric(16);
             file = new File(path, id+".bmp");
         }
         return id;
     }
 
-    private String generateFileId(){
-        Random rng = new Random(3324524);
-        String characters = "abcdefghijklmnopqrstuvwxyz";
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < 20; i++)
-        {
-            res.append(characters.charAt(rng.nextInt(characters.length())));
-        }
-        return res.toString();
-    }
 
     public void saveImage(BMPFile image) throws IOException {
         File output = new File(path, image.getFileName());

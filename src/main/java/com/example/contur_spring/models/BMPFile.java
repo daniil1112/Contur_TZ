@@ -50,13 +50,9 @@ public class BMPFile {
     }
 
 
-    public void setPuzzle(BufferedImage image_puzzle, int x, int y){
-        System.out.println("Holst: width: "+this.width+" height: "+this.height);
-        System.out.println("Puzzle: width: "+image_puzzle.getWidth()+" height: "+image_puzzle.getHeight());
-
-        for (int i = Math.max(y, 0); i<this.height && i<image_puzzle.getHeight()+y; i++) {
-            for (int j = Math.max(x, 0); j < this.width && j < image_puzzle.getWidth()+x; j++) {
-                System.out.println("holst x: "+(x + j)+" y: "+(y + i)+" puzzle: x: "+(j-x)+" y: "+(i-y));
+    public void setPuzzle(BufferedImage image_puzzle, int x, int y, int height, int width){
+        for (int i = Math.max(y, 0); i<this.height && i<height+y; i++) {
+            for (int j = Math.max(x, 0); j < this.width && j < width+x; j++) {
                 image.setRGB(j, i, image_puzzle.getRGB(j-x, i-y));
             }
         }
