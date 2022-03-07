@@ -26,6 +26,16 @@ public class FileRepository {
         return file.createNewFile();
     }
 
+    public boolean fileExists(String fileId, String extension){
+        File file = new File(path, fileId+extension);
+        return file.exists();
+    }
+
+    public boolean fileDelete(String fileId, String extension){
+        File file = new File(path, fileId+extension);
+        return file.delete();
+    }
+
     public boolean createFile(String filename) throws IOException {
         File file = new File(path, filename);
         if (file.exists()){
@@ -56,8 +66,16 @@ public class FileRepository {
     }
 
     public void saveImage(BMPFile image) throws IOException {
-        File output = new File(image.getFileName());
+        File output = new File(path, image.getFileName());
         ImageIO.write(image.getImage(), image.getFormat(), output);
+    }
+
+    public BMPFile getBMPFile(String filename) throws IOException {
+        BufferedImage img = ImageIO.read(new File(path, filename));
+        BMPFile result = new BMPFile(img.getHeight(), img.getWidth());
+        result.setFileName(filename.split("\\.")[0]);
+        result.setImage(img);
+        return result;
     }
 
 }
