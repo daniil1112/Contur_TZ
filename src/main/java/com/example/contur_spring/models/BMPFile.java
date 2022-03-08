@@ -1,8 +1,5 @@
 package com.example.contur_spring.models;
 
-
-
-
 import java.awt.image.BufferedImage;
 
 

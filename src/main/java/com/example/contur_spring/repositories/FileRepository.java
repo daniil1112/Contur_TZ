@@ -7,50 +7,51 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 public class FileRepository {
     String path;
-    public void setPath(String path){
+
+    public void setPath(String path) {
         this.path = path;
     }
-    public boolean isFileExist(String fileName){
+
+    public boolean isFileExist(String fileName) {
         File file = new File(path, fileName);
         return file.exists();
     }
 
     public boolean createFile(String fileId, String extension) throws IOException {
-        File file = new File(path, fileId+extension);
-        if (file.exists()){
+        File file = new File(path, fileId + extension);
+        if (file.exists()) {
             return false;
         }
         return file.createNewFile();
     }
 
-    public boolean fileExists(String fileId, String extension){
-        File file = new File(path, fileId+extension);
+    public boolean fileExists(String fileId, String extension) {
+        File file = new File(path, fileId + extension);
         return file.exists();
     }
 
-    public boolean fileDelete(String fileId, String extension){
-        File file = new File(path, fileId+extension);
+    public boolean fileDelete(String fileId, String extension) {
+        File file = new File(path, fileId + extension);
         return file.delete();
     }
 
     public boolean createFile(String filename) throws IOException {
         File file = new File(path, filename);
-        if (file.exists()){
+        if (file.exists()) {
             return false;
         }
         return file.createNewFile();
     }
 
-    public String generateUniqId(){
+    public String generateUniqId() {
         String id = RandomStringUtils.randomAlphanumeric(16);
-        File file = new File(path, id+".bmp");
-        while (file.exists()){
+        File file = new File(path, id + ".bmp");
+        while (file.exists()) {
             id = RandomStringUtils.randomAlphanumeric(16);
-            file = new File(path, id+".bmp");
+            file = new File(path, id + ".bmp");
         }
         return id;
     }
