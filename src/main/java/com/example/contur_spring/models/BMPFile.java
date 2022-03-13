@@ -18,7 +18,7 @@ public class BMPFile {
     private BufferedImage image;
 
 
-    public BMPFile(int height, int width){
+    public BMPFile(int height, int width) {
         setHeight(height);
         setWidth(width);
     }
@@ -26,24 +26,28 @@ public class BMPFile {
     public void setImage(BufferedImage image) {
         this.image = image;
     }
+
     public void setHeight(int height) {
         this.height = height;
     }
+
     public void setWidth(int width) {
         this.width = width;
     }
+
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
     public String getFileName() {
-        return fileName+"."+format;
+        return fileName + "." + format;
     }
+
     public String getFormat() {
         return format;
     }
 
-    public void createEmptyImage(){
+    public void createEmptyImage() {
         image = new BufferedImage(width, height, mode);
     }
 
@@ -52,21 +56,21 @@ public class BMPFile {
     }
 
 
-    public void setPuzzle(BufferedImage image_puzzle, int x, int y, int height, int width){
-        for (int i = Math.max(y, 0); i<this.height && i<height+y; i++) {
-            for (int j = Math.max(x, 0); j < this.width && j < width+x; j++) {
-                image.setRGB(j, i, image_puzzle.getRGB(j-x, i-y));
+    public void setPuzzle(BufferedImage image_puzzle, int x, int y, int height, int width) {
+        for (int i = Math.max(y, 0); i < this.height && i < height + y; i++) {
+            for (int j = Math.max(x, 0); j < this.width && j < width + x; j++) {
+                image.setRGB(j, i, image_puzzle.getRGB(j - x, i - y));
             }
         }
     }
 
-    public BMPFile getImagePart(int x, int y, int width, int height){
+    public BMPFile getImagePart(int x, int y, int width, int height) {
         BMPFile result = new BMPFile(height, width);
 
         BufferedImage imgRes = new BufferedImage(width, height, mode);
-        for (int i = 0; i < height; i++){
-            for (int j = 0; j<width; j++){
-                imgRes.setRGB(j,i, image.getRGB(j+x, i+y));
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                imgRes.setRGB(j, i, image.getRGB(j + x, i + y));
             }
         }
 
@@ -80,10 +84,11 @@ public class BMPFile {
         return new ByteArrayInputStream(os.toByteArray());
     }
 
-    public boolean checkXExist(int x){
+    public boolean checkXExist(int x) {
         return x > 0 && x < width;
     }
-    public boolean checkYExist(int y){
+
+    public boolean checkYExist(int y) {
         return y > 0 && y < height;
     }
 

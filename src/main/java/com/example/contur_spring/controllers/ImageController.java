@@ -60,7 +60,7 @@ public class ImageController {
         if (width > 20_000 || width < 1 || height < 1 || height > 50_000) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_COORDINATES);
         }
-        if (!fileRepository.fileExists(imageId, ".bmp")){
+        if (!fileRepository.fileExists(imageId, ".bmp")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(FILE_NOT_FOUND_MSG);
         }
         String INVALID_INPUT_IMAGE = "You should put image to requst";

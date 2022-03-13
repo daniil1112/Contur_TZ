@@ -8,7 +8,6 @@ public class ConturSpringApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ConturSpringApplication.class, args);
-
     }
 
 }
