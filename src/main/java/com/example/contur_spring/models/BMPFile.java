@@ -1,6 +1,11 @@
 package com.example.contur_spring.models;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class BMPFile {
@@ -53,7 +58,33 @@ public class BMPFile {
                 image.setRGB(j, i, image_puzzle.getRGB(j-x, i-y));
             }
         }
+    }
 
+    public BMPFile getImagePart(int x, int y, int width, int height){
+        BMPFile result = new BMPFile(height, width);
+
+        BufferedImage imgRes = new BufferedImage(width, height, mode);
+        for (int i = 0; i < height; i++){
+            for (int j = 0; j<width; j++){
+                imgRes.setRGB(j,i, image.getRGB(j+x, i+y));
+            }
+        }
+
+        result.setImage(imgRes);
+        return result;
+    }
+
+    public InputStream getInputStream() throws IOException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(image, format, os);
+        return new ByteArrayInputStream(os.toByteArray());
+    }
+
+    public boolean checkXExist(int x){
+        return x > 0 && x < width;
+    }
+    public boolean checkYExist(int y){
+        return y > 0 && y < height;
     }
 
 }

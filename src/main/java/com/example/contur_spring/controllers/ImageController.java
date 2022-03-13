@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 @RestController
 @RequestMapping("/chartas")
 public class ImageController {
+
+    private final String FILE_NOT_FOUND_MSG = "File not found";
+    private final String INVALID_COORDINATES = "Invalid coordinates";
 
     private final FileRepository fileRepository;
 
@@ -29,9 +29,9 @@ public class ImageController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
-    public ResponseEntity createImage(@RequestParam("width") int width, @RequestParam("height") int height) throws IOException {
+    public ResponseEntity<?> createImage(@RequestParam("width") int width, @RequestParam("height") int height) throws IOException {
         if (width > 20_000 || width < 1 || height < 1 || height > 50_000) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         String id = fileRepository.generateUniqId();
@@ -40,65 +40,72 @@ public class ImageController {
         bmpFile.createEmptyImage();
         fileRepository.saveImage(bmpFile);
 
-        return new ResponseEntity(id, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(id);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteImage(@PathVariable("id") String imageId) {
+    public ResponseEntity<?> deleteImage(@PathVariable("id") String imageId) {
         if (fileRepository.fileExists(imageId, ".bmp")) {
             if (fileRepository.fileDelete(imageId, ".bmp")) {
-                return new ResponseEntity(HttpStatus.OK);
+                return ResponseEntity.ok().build();
             }
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("can't get access to delete image");
         }
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(FILE_NOT_FOUND_MSG);
     }
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity setPartImage(HttpServletRequest requestEntity, @PathVariable("id") String imageId, @RequestParam("width") int width, @RequestParam("height") int height, @RequestParam("x") int x, @RequestParam("y") int y) throws IOException {
-        if (width > 20_000 || width < 1 || height < 1 || height > 50_000 || !fileRepository.fileExists(imageId, ".bmp")) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> setPartImage(HttpServletRequest requestEntity, @PathVariable("id") String imageId, @RequestParam("width") int width, @RequestParam("height") int height, @RequestParam("x") int x, @RequestParam("y") int y) throws IOException {
+        if (width > 20_000 || width < 1 || height < 1 || height > 50_000) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_COORDINATES);
         }
+        if (!fileRepository.fileExists(imageId, ".bmp")){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(FILE_NOT_FOUND_MSG);
+        }
+        String INVALID_INPUT_IMAGE = "You should put image to requst";
         if (requestEntity.getInputStream() == null) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_INPUT_IMAGE);
         }
+
         BufferedImage image = ImageIO.read(requestEntity.getInputStream());
         if (image == null) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_INPUT_IMAGE);
         }
 
         if (image.getHeight() != height || image.getWidth() != width) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_INPUT_IMAGE);
         }
 
         BMPFile holst = fileRepository.getBMPFile(imageId + ".bmp");
 
         if (height + y < 0 || y > holst.getImage().getHeight() || width + x < 0 || x > holst.getImage().getWidth()) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         holst.setPuzzle(image, x, y, height, width);
 
         fileRepository.saveImage(holst);
 
-        return new ResponseEntity(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> getPartImage(@PathVariable("id") String imageId, @RequestParam("width") int width, @RequestParam("height") int height, @RequestParam("x") int x, @RequestParam("y") int y) throws IOException {
+    public ResponseEntity<?> getPartImage(@PathVariable("id") String imageId, @RequestParam("width") int width, @RequestParam("height") int height, @RequestParam("x") int x, @RequestParam("y") int y) throws IOException {
+        if (x < 0 || y < 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_COORDINATES);
+        }
+        if (!fileRepository.fileExists(imageId, ".bmp")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(FILE_NOT_FOUND_MSG);
+        }
 
         BMPFile holst = fileRepository.getBMPFile(imageId + ".bmp");
-        BufferedImage img = holst.getImage();
-//        holst.setPuzzle(image, x, y, height, width);
 
-//        fileRepository.saveImage(holst);
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(img, "bmp", os);                          // Passing: ​(RenderedImage im, String formatName, OutputStream output)
-        InputStream is = new ByteArrayInputStream(os.toByteArray());
-        return ResponseEntity.ok().contentType(MediaType.valueOf("image/bmp")).body(new InputStreamResource(is));
+        if (!holst.checkXExist(x + width - 1) || !holst.checkYExist(y + height - 1)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(INVALID_COORDINATES);
+        }
 
-//        return new ResponseEntity(HttpStatus.CREATED);
+        return ResponseEntity.ok().contentType(MediaType.valueOf("image/bmp")).body(new InputStreamResource(holst.getImagePart(x, y, width, height).getInputStream()));
     }
 }
