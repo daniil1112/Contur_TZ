@@ -26,7 +26,7 @@ public class AppConfig {
         } else {
             String path = new File(new File(".").getAbsolutePath()).getAbsolutePath();
             fileRepository.setPath(path);
-            System.err.println("Please, launch app with files path, by default set path "+path);
+            System.err.println("Please, launch app with files path, by default set path " + path);
         }
         return fileRepository;
     }

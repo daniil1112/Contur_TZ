@@ -68,10 +68,10 @@ public class BMPFile {
         BMPFile result = new BMPFile(height, width);
 
         BufferedImage imgRes = new BufferedImage(width, height, mode);
-        for (int i = y; i < y+height; i++) {
-            for (int j = x; j < x+width; j++) {
-                if (i >= 0 && j >= 0 && j < image.getHeight() && x < image.getWidth()){
-                    imgRes.setRGB(j-x, i-y, image.getRGB(j, i));
+        for (int i = y; i < y + height; i++) {
+            for (int j = x; j < x + width; j++) {
+                if (i >= 0 && j >= 0 && j < image.getHeight() && x < image.getWidth()) {
+                    imgRes.setRGB(j - x, i - y, image.getRGB(j, i));
                 }
             }
         }
