@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
+
 @Configuration
 @ComponentScan("com.example.contur_spring")
 public class AppConfig {
@@ -22,10 +24,10 @@ public class AppConfig {
         if (args.length > 0) {
             fileRepository.setPath(args[0]);
         } else {
-            fileRepository.setPath("/");
-            System.err.println("Please, launch app with files path, by default set path /");
+            String path = new File(new File(".").getAbsolutePath()).getAbsolutePath();
+            fileRepository.setPath(path);
+            System.err.println("Please, launch app with files path, by default set path "+path);
         }
         return fileRepository;
-
     }
 }

@@ -10,10 +10,10 @@ import java.io.InputStream;
 
 public class BMPFile {
 
-    int height;
-    int width;
-    String fileName;
-    String format = "bmp";
+    private int height;
+    private int width;
+    private String fileName;
+    private final String format = "bmp";
     private final int mode = BufferedImage.TYPE_INT_RGB;
     private BufferedImage image;
 
@@ -68,9 +68,11 @@ public class BMPFile {
         BMPFile result = new BMPFile(height, width);
 
         BufferedImage imgRes = new BufferedImage(width, height, mode);
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                imgRes.setRGB(j, i, image.getRGB(j + x, i + y));
+        for (int i = y; i < y+height; i++) {
+            for (int j = x; j < x+width; j++) {
+                if (i >= 0 && j >= 0 && j < image.getHeight() && x < image.getWidth()){
+                    imgRes.setRGB(j-x, i-y, image.getRGB(j, i));
+                }
             }
         }
 
@@ -84,12 +86,11 @@ public class BMPFile {
         return new ByteArrayInputStream(os.toByteArray());
     }
 
-    public boolean checkXExist(int x) {
-        return x > 0 && x < width;
+    public int getWidth() {
+        return width;
     }
 
-    public boolean checkYExist(int y) {
-        return y > 0 && y < height;
+    public int getHeight() {
+        return height;
     }
-
 }

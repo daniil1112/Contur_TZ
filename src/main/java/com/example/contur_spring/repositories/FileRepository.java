@@ -15,18 +15,6 @@ public class FileRepository {
         this.path = path;
     }
 
-    public boolean isFileExist(String fileName) {
-        File file = new File(path, fileName);
-        return file.exists();
-    }
-
-    public boolean createFile(String fileId, String extension) throws IOException {
-        File file = new File(path, fileId + extension);
-        if (file.exists()) {
-            return false;
-        }
-        return file.createNewFile();
-    }
 
     public boolean fileExists(String fileId, String extension) {
         File file = new File(path, fileId + extension);
@@ -38,13 +26,6 @@ public class FileRepository {
         return file.delete();
     }
 
-    public boolean createFile(String filename) throws IOException {
-        File file = new File(path, filename);
-        if (file.exists()) {
-            return false;
-        }
-        return file.createNewFile();
-    }
 
     public String generateUniqId() {
         String id = RandomStringUtils.randomAlphanumeric(16);
